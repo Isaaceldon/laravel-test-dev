@@ -22,6 +22,7 @@ class DebitCardControllerTest extends TestCase
 
     public function testCustomerCanSeeAListOfDebitCards()
     {
+        $this->actingAs(factory('App\Models\User')->create());
         $debit_card = factory('App\Models\DebitCard')->create();
 
         $response = $this->get('/debit-cards');

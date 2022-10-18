@@ -28,6 +28,11 @@ class DebitCardTransactionControllerTest extends TestCase
     public function testCustomerCanSeeAListOfDebitCardTransactions()
     {
         // get /debit-card-transactions
+        $this->actingAs(factory('App\Models\User')->create());
+        $debit_card_transactions = factory('App\Models\DebitCardTransaction')->make();
+
+        $response = $this->get('/debit-cards-transactions');
+        $response->assertSee($debit_card_transaction->amount);
     }
 
     public function testCustomerCannotSeeAListOfDebitCardTransactionsOfOtherCustomerDebitCard()
@@ -38,6 +43,12 @@ class DebitCardTransactionControllerTest extends TestCase
     public function testCustomerCanCreateADebitCardTransaction()
     {
         // post /debit-card-transactions
+        $this->actingAs(factory('App\Models\User')->create());
+        $debit_card_transactions = factory('App\Models\DebitCardTransaction')->make();
+
+        $this->post('/debit-card-transaction',$debit_card_transactions->toArray());
+
+        $this->assertEquals(1,DebitCardTransaction::all()->count());
     }
 
     public function testCustomerCannotCreateADebitCardTransactionToOtherCustomerDebitCard()
@@ -48,6 +59,12 @@ class DebitCardTransactionControllerTest extends TestCase
     public function testCustomerCanSeeADebitCardTransaction()
     {
         // get /debit-card-transactions/{debitCardTransaction}
+
+        $this->actingAs(factory('App\Models\User')->create());
+        $debit_card_transactions = factory('App\Models\DebitCardTransaction')->make();
+
+        $response = $this->get('/debit-card-transactions/{debitCardTransaction}');
+        $response->assertSee($debit_card_transaction->amount);
     }
 
     public function testCustomerCannotSeeADebitCardTransactionAttachedToOtherCustomerDebitCard()
