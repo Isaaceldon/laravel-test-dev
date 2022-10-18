@@ -42,6 +42,12 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    public static $register_rules = [
+        'name' => 'required|min:4',
+        'email' => 'required|email',
+        'password' => 'required|min:8',
+    ];
+
     /**
      * An User has many debit cards
      *

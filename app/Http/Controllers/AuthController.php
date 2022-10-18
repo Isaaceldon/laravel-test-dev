@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Validator;
+use Symfony\Component\HttpFoundation\Response;
 
 class AuthController extends Controller
 {
@@ -12,11 +16,15 @@ class AuthController extends Controller
      */
     public function register(Request $request)
     {
-        $this->validate($request, [
-            'name' => 'required|min:4',
-            'email' => 'required|email',
-            'password' => 'required|min:8',
-        ]);
+
+
+        $validator = Validator::make($request->all(),User::$register_rules);
+
+        if($validator->fails()){
+            return response(
+                $validator->errors(),Response::HTTP_BAD_REQUEST
+            );
+        }
 
         $user = User::create([
             'name' => $request->name,
@@ -26,7 +34,8 @@ class AuthController extends Controller
 
         $token = $user->createToken('user-token')->accessToken;
 
-        return response()->json(['token' => $token], 200);
+        return response()->json(['token' => $token,'user' => $user,], 200);
+
     }
 
     /**
@@ -40,8 +49,9 @@ class AuthController extends Controller
         ];
 
         if (auth()->attempt($data)) {
+            $user = User::where('email', $request->email)->first();
             $token = auth()->user()->createToken('user-token')->accessToken;
-            return response()->json(['token' => $token], 200);
+            return response()->json(['token' => $token,"user"=>$user], 200);
         } else {
             return response()->json(['error' => 'Unauthorised'], 401);
         }
